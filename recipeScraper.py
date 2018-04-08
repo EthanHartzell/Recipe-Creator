@@ -9,3 +9,4 @@ print(name)
 price_box = soup.find("div", attrs={"class":"price"})
 price = price_box.text
 print(price)
+#test
