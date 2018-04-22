@@ -15,7 +15,7 @@ def scrapeIngredients(Food):
         soup = BeautifulSoup(page, 'html.parser')
         name_box = soup.find_all(itemprop = 'ingredients')
         n = 1
-        vars()['Recipie' + str(n)]= pd.DataFrame(columns = ['Quantity','Measurment','Adj','Adj2','Noun1','Noun2'],index=[np.arange(len(name_box))])
+        vars()['Recipie' + str(n)]= pd.DataFrame(columns = ['Quantity','Measurment','Adj','Adj2','Noun1','Noun2','Ingredient'],index=[np.arange(len(name_box))])
         n = n+1
         for i in range(0,len(name_box)): 
             x = (nltk.pos_tag(nltk.word_tokenize(''.join(name_box[i].contents))))
@@ -43,7 +43,41 @@ def scrapeIngredients(Food):
                     & (pd.notnull(vars()['Recipie' + str(n-1)]['Noun1'][i]).any()) \
                     & (pd.isnull(vars()['Recipie' + str(n-1)]['Noun2'][i]).any()):
                    vars()['Recipie' + str(n-1)]['Noun2'][i] = x[j][0]
-        print(vars()['Recipie' + str(n-1)])
+                if (pd.isnull(vars()['Recipie' + str(n-1)]['Adj'][i]).any()) \
+                    & (pd.isnull(vars()['Recipie' + str(n-1)]['Adj2'][i]).any()) \
+                    & (pd.isnull(vars()['Recipie' + str(n-1)]['Noun1'][i]).any()) \
+                    & (pd.isnull(vars()['Recipie' + str(n-1)]['Noun2'][i]).any()):
+                    vars()['Recipie' + str(n-1)]['Ingredient'][i] = \
+                    vars()['Recipie' + str(n-1)]['Measurment'][i]
+                elif pd.isnull(vars()['Recipie' + str(n-1)]['Adj2'][i]).any():
+                    if pd.isnull(vars()['Recipie' + str(n-1)]['Adj'][i]).any():
+                        adj = ''
+                    else: adj = vars()['Recipie' + str(n-1)]['Adj'][i]
+                    if pd.isnull(vars()['Recipie' + str(n-1)]['Noun1'][i]).any():
+                        N1 = ''
+                    else: N1 = vars()['Recipie' + str(n-1)]['Noun1'][i]
+                    if pd.isnull(vars()['Recipie' + str(n-1)]['Noun2'][i]).any():
+                        N2 = ''
+                    else: N2 = vars()['Recipie' + str(n-1)]['Noun2'][i]
+                    vars()['Recipie' + str(n-1)]['Ingredient'][i] = \
+                    adj + N1 + N2
+                elif pd.notnull(vars()['Recipie' + str(n-1)]['Adj2'][i]).any():
+                    if pd.isnull(vars()['Recipie' + str(n-1)]['Adj2'][i]).any():
+                        adj = ''
+                    else: adj = vars()['Recipie' + str(n-1)]['Adj2'][i]
+                    if pd.isnull(vars()['Recipie' + str(n-1)]['Noun1'][i]).any():
+                        N1 = ''
+                    else: N1 = vars()['Recipie' + str(n-1)]['Noun1'][i]
+                    if pd.isnull(vars()['Recipie' + str(n-1)]['Noun2'][i]).any():
+                        N2 = ''
+                    else: N2 = vars()['Recipie' + str(n-1)]['Noun2'][i]
+                    vars()['Recipie' + str(n-1)]['Ingredient'][i] = \
+                    adj + N1 + N2
+        print(vars()['Recipie' + str(n-1)][['Quantity','Measurment','Ingredient']])
+
+
+
+
 
 scrapeIngredients("chocolatechipcookies")
 
